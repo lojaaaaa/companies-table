@@ -1,23 +1,14 @@
-import { PER_PAGE } from "@/shared/config/constants";
+import { API_COMPANIES, ErrorMessages, PER_PAGE } from "@/shared/config";
 import { delay, getErrorMessage } from "@/shared/lib/utils";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { v4 as uuidv4 } from 'uuid';
-import { ICompany } from "../model";
+import { clearStore, ICompany } from "../model";
 
 type GetCompaniesParams = Record<string, string>;
 
-const API_COMPANIES = import.meta.env.VITE_BASE_URL + '/companies';
-
-enum ErrorMessages {
-  CREATE_COMPANY_ERROR = 'Ошибка добавления компании',
-  GET_COMPANIES_ERROR = 'Ошибка получения списка компаний',
-  EDIT_COMPANY_ERROR = 'Ошибка редактирования компании',
-  DELETE_COMPANIES_ERROR = 'Ошибка удаления компаний',
-};
-
 export const createCompany = createAsyncThunk(
   'companies/createCompany',
-  async function (params: Omit<ICompany, 'id'>, { rejectWithValue }) {
+  async function (params: Omit<ICompany, 'id'>, { rejectWithValue, dispatch }) {
     try {
       await delay(1000);
       const response = await fetch(`${API_COMPANIES}`, {
@@ -31,6 +22,9 @@ export const createCompany = createAsyncThunk(
         })
       });
       const data = await response.json();
+      
+      dispatch(clearStore())
+
       return data;
     } catch (error) {
       return rejectWithValue(getErrorMessage(error, ErrorMessages.CREATE_COMPANY_ERROR));
@@ -115,7 +109,6 @@ export const deleteCompanies = createAsyncThunk(
       );
 
       return idsToDelete;
-
     } catch (error) {
       return rejectWithValue(getErrorMessage(error, ErrorMessages.DELETE_COMPANIES_ERROR));
     }

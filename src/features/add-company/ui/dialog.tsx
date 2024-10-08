@@ -1,18 +1,25 @@
-import { createCompany } from '@/entities/company/api';
+import { useState } from 'react';
+
+import { createCompany } from '@/entities/company';
 import { useAppDispatch } from '@/shared/lib/hooks';
-import { Button } from '@/shared/ui/button';
+
 import { 
   Dialog, 
   DialogContent, 
   DialogTitle, 
   DialogHeader, 
   DialogTrigger, 
-  DialogFooter
-} from '@/shared/ui/dialog';
-import { Input } from '@/shared/ui/input';
-import { useState } from 'react';
+  DialogFooter,
+  Input,
+  Button
+} from '@/shared/ui';
 
-export const AddCompanyDialog = () => {
+
+interface AddCompanyDialogProps {
+  setPage: (page: number) => void;
+}
+
+export const AddCompanyDialog = ({ setPage }: AddCompanyDialogProps) => {
   const [open, setOpen] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState('');
@@ -23,14 +30,12 @@ export const AddCompanyDialog = () => {
 
   const handleCreateClick = () => {
     if (name && address) {
-      // Отправка данных на сервер
       dispatch(createCompany({ name, address }));
 
-      // Закрытие модалки и сброс полей
+      setPage(0);
       setOpen(false);
       clearForm();
     } else {
-      // Установка сообщения об ошибке
       setIsError(true);
       setError('Заполните поля');
     }

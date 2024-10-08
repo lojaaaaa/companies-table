@@ -1,15 +1,27 @@
-import { selectCompaniesData, selectCompaniesIsLoading } from '@/entities/company'
-import { deleteCompanies, getCompanies } from '@/entities/company/api'
-import { PER_PAGE } from '@/shared/config/constants'
-import { useAppDispatch, useAppSelector } from '@/shared/lib/hooks'
-import { Checkbox } from '@/shared/ui/checkbox'
-import { Loader } from '@/shared/ui/loader'
-import { debounce } from 'lodash'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { Row } from './table-row'
-import { Button } from '@/shared/ui/button'
-import { AddCompanyDialog } from '@/features/add-company/ui/dialog'
+import { 
+  useCallback, 
+  useEffect, 
+  useRef, 
+  useState
+} from 'react'
 
+import { 
+  selectCompaniesData, 
+  selectCompaniesIsLoading, 
+  deleteCompanies, 
+  getCompanies 
+} from '@/entities/company'
+
+import { AddCompanyDialog } from '@/features/add-company/ui/dialog'
+import { PER_PAGE } from '@/shared/config/constants'
+import { useAppDispatch, useAppSelector, useDebouncedFetch, useObserver, useVirtualizedList } from '@/shared/lib/hooks'
+import { Loader, Button } from '@/shared/ui'
+
+import { TableHead } from './table-head'
+import { TableBody } from './table-body';
+
+const rowHeight = 73;
+const visibleRows = +PER_PAGE;
 
 export const CompaniesTable = () => {
   const { items: companies, totalPages } = useAppSelector(selectCompaniesData);
@@ -20,19 +32,17 @@ export const CompaniesTable = () => {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isAllSelected, setIsAllSelected] = useState(false);
 
-  const observer = useRef<IntersectionObserver | null>(null);
   const lastElement = useRef<HTMLDivElement | null>(null);
 
-  const handleSelectAllChange = () => {
+  const handleSelectAllChange = useCallback(() => {
     if (isAllSelected) {
       setSelectedIds([]);
       setIsAllSelected(false);
     } else {
-      // Иначе выбираем все загруженные элементы
       setSelectedIds(companies.map(company => company.id));
       setIsAllSelected(true);
     }
-  };
+  }, [isAllSelected, companies]);
 
   const handleSelectChange = useCallback((id: string) => {
     setSelectedIds(prev => {
@@ -44,8 +54,6 @@ export const CompaniesTable = () => {
     });
   }, [companies.length]);
 
-
-  // Удаляем выбранные элементы
   const handleDeleteClick = () => {
     if (selectedIds.length) {
       dispatch(deleteCompanies(selectedIds));
@@ -53,20 +61,22 @@ export const CompaniesTable = () => {
     }
   };
 
-  // Логика бесконечной прокрутки
-  useEffect(() => {
-    const debouncedFetch = debounce((page) => {
-      dispatch(getCompanies({ _page: String(page), _limit: PER_PAGE }));
-    }, 300);
-  
-    debouncedFetch(page);
-  
-    return () => {
-      debouncedFetch.cancel();
-    };
-  }, [page]);
+  const { 
+    visibleItems: visibleCompanies, 
+    topHeight, 
+    bottomHeight, 
+    handleScroll 
+  } = useVirtualizedList(companies, rowHeight, visibleRows);
 
-  // Автоматическое добавление новых компаний в выбор при подгрузке, если выбраны все
+  useObserver(
+    lastElement, 
+    page < totalPages, 
+    isLoading, 
+    () => setPage((prev) => prev + 1)
+  );
+
+  useDebouncedFetch(page, () => getCompanies({ _page: String(page), _limit: PER_PAGE }));
+
   useEffect(() => {
     if (isAllSelected) {
       setSelectedIds(prev => [
@@ -77,29 +87,10 @@ export const CompaniesTable = () => {
   }, [companies, isAllSelected]);
 
   useEffect(() => {
-    if (isLoading) return;
-    if (observer.current) observer.current.disconnect();
-
-    const callback = (entries: IntersectionObserverEntry[]) => {
-      if (entries[0].isIntersecting && page < totalPages) {
-        setPage((prev) => prev + 1);
-      }
-    };
-
-    observer.current = new IntersectionObserver(callback);
-    if (lastElement.current) {
-      observer.current.observe(lastElement.current);
+    if (!page) {
+      setPage(1);
     }
-
-    return () => {
-      if (observer.current) observer.current.disconnect();
-    };
-
-  }, [isLoading]);
-
-  const isRowSelected = (id: string) => selectedIds.includes(id);
-
-  console.log(selectedIds)
+  }, [page]);
 
   return (
     <div>
@@ -108,46 +99,27 @@ export const CompaniesTable = () => {
           <Button onClick={handleDeleteClick} disabled={selectedIds.length === 0}>
             Удалить все выбранные
           </Button>
-          <AddCompanyDialog />
+          <AddCompanyDialog setPage={setPage} />
         </div>
         {companies.length > 0 &&  <h3>Количество: {companies.length}</h3>}
       </div>
 
-      <table>
-        <thead>
-          <tr className='bg-gray-200'>
-            <th>
-              <Checkbox 
-                className="align-middle" 
-                id="checkboxAll" 
-                checked={isAllSelected} 
-                onCheckedChange={handleSelectAllChange} 
-              />
-            </th>
-            <th>
-              Компании
-            </th>
-            <th>
-              Адреса
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map(({ id, name, address }) => (
-            <Row
-              key={id}
-              id={id}
-              name={name}
-              address={address}
-              isSelected={isRowSelected(id)}
-              handleSelectChange={handleSelectChange}
-            />
-          ))}
-        </tbody>
-      </table>
-      {isLoading && <Loader className="mt-8 mx-auto" />}
-      {!isLoading && companies.length < 0 && <p className='text-center'>Таблица пустая</p>}
-      <div ref={lastElement} style={{ height: '20px', margin: '20px 0' }} />
+      <div className='relative' >
+        <div style={{ height: rowHeight * visibleRows + 1, overflow: 'auto' }} onScroll={handleScroll}>
+          <table>
+            <TableHead isAllSelected={isAllSelected} onSelectAllChange={handleSelectAllChange} />
+            <div style={{ height: topHeight }} />
+            
+            <TableBody items={visibleCompanies} selectedIds={selectedIds} onSelectChange={handleSelectChange} />
+
+            <div style={{ height: bottomHeight }} />  
+          </table>
+          {isLoading && <Loader className="mt-8 mx-auto" />}
+          {!isLoading && companies.length === 0 && <p className='text-center'>Таблица пустая</p>}
+          <div ref={lastElement} style={{ height: '20px', margin: '20px 0' }} />
+        </div>
+      </div>
+
     </div>
   );
 };

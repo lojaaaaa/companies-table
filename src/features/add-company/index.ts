@@ -1,1 +1,1 @@
-export { AddCompanyDialog } from './ui/dialog';
+export { AddCompanyDialog } from './ui';

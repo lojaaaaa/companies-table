@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { CompanyState, ICompany } from './types';
-import { createCompany, deleteCompanies, getCompanies } from '../api';
+import { deleteCompanies, getCompanies } from '../api';
 import { editCompany } from '@/entities/company/api';
 
 const initialState: CompanyState = {
@@ -36,11 +36,12 @@ export const companySlice = createSlice({
       .addCase(deleteCompanies.fulfilled, (state, { payload }: PayloadAction<string[]>) => {
         state.data.items = state.data.items.filter(item => !payload.includes(item.id));
       })
-
-      .addCase(createCompany.fulfilled, (state, { payload }: PayloadAction<ICompany>) => {
-        state.data.items.push(payload);
-      })
   },
   reducers: {
+    clearStore(state) {
+      state.data.items = [];
+    }
   },
 });
+
+export const { clearStore } = companySlice.actions;
