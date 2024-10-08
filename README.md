@@ -3,26 +3,29 @@
 ## Запуск:
 
 
-# local
+### local
 
 ```
 npm install
 
 cp .env.example.local .env
 
-npm run server 
+# json-server
+npm run server
 
+# client
 npm run dev
 
 ```
 
-# prod
+## prod
 
 ```
 npm install
 
 cp .env.example.prod .env
 
+# client
 npm run dev
 
 ```
