@@ -1,5 +1,5 @@
 import { Checkbox } from '@/shared/ui/checkbox'
-import React, { memo } from 'react'
+import { memo } from 'react'
 
 interface TableHeadProps {
   isAllSelected: boolean;
