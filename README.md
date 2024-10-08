@@ -1,7 +1,7 @@
 # Таблица Список Компаний
 
 
-<img src="./src/shared/assets/1.png" style="width: 500px; text-align: center" />
+<img src="./src/shared/assets/1.png" style="width: 100%" />
 
 
 ## Запуск:
