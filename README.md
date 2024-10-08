@@ -5,7 +5,7 @@
 
 
 ### json-server: https://json-server-db-production.up.railway.app
-##№ client: https://companies-table.onrender.com
+### client: https://companies-table.onrender.com
 
 
 ## Запуск:
