@@ -1,5 +1,9 @@
 # Таблица Список Компаний
 
+
+<img src="./src/shared/assets/1.png" style="width: 500px; display: block; margin: 0 auto;" />
+
+
 ## Запуск:
 
 
@@ -19,6 +23,7 @@ npm run dev
 ```
 
 ## prod
+
 
 ```
 npm install

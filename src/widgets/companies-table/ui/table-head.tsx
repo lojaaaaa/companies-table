@@ -7,7 +7,6 @@ interface TableHeadProps {
 }
 
 export const TableHead = memo(({ isAllSelected, onSelectAllChange }: TableHeadProps) => {
-  console.log('render')
   return (
     <thead className='bg-gray-200 sticky top-0 h-[73px] z-10'>
       <tr>
