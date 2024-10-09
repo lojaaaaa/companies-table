@@ -1,10 +1,4 @@
 import { Main } from "@/pages/main";
-import { MainLayout } from "./layout";
+import { MainLayout } from "./layouts";
 
-export const App= () => {
-  return (
-    <MainLayout>
-      <Main />
-    </MainLayout>
-  )
-};
+export const App= () => <MainLayout><Main /></MainLayout>;

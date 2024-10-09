@@ -7,20 +7,18 @@ interface TableBodyProps {
   onSelectChange: (id: string) => void;
 };
 
-export const TableBody = ({ items, selectedIds, onSelectChange }: TableBodyProps) => {
-  return (
-    <tbody 
-    >
-      {items.map(({ id, name, address }) => (
-        <Row
-          key={id}
-          id={id}
-          name={name}
-          address={address}
-          isSelected={selectedIds.includes(id)}
-          onSelectChange={onSelectChange}
-        />
-      ))}
-    </tbody>
-  )
-}
+export const TableBody = ({ items, selectedIds, onSelectChange }: TableBodyProps) => (
+  <tbody 
+  >
+    {items.map(({ id, name, address }) => (
+      <Row
+        key={id}
+        id={id}
+        name={name}
+        address={address}
+        isSelected={selectedIds.includes(id)}
+        onSelectChange={onSelectChange}
+      />
+    ))}
+  </tbody>
+);

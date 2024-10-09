@@ -3,7 +3,7 @@ import { useAppDispatch } from '@/shared/lib/hooks';
 import { Checkbox } from '@/shared/ui/checkbox';
 import { Input } from '@/shared/ui/input';
 import { debounce } from 'lodash';
-import React, { memo, useCallback, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react';
 
 interface RowProps {
   id: string;
@@ -11,7 +11,7 @@ interface RowProps {
   address: string;
   isSelected: boolean;
   onSelectChange: (id: string) => void;
-}
+};
 
 export const Row = memo(({ id, name, address, isSelected, onSelectChange }: RowProps) => {
 

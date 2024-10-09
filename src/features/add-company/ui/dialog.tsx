@@ -17,7 +17,7 @@ import {
 
 interface AddCompanyDialogProps {
   setPage: (page: number) => void;
-}
+};
 
 export const AddCompanyDialog = ({ setPage }: AddCompanyDialogProps) => {
   const [open, setOpen] = useState(false);

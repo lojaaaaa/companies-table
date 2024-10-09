@@ -1,8 +1,8 @@
-import { cn } from "../lib/utils"
+import { cn } from "../lib/utils";
 
 interface LoaderProps {
   className?: string;
-}
+};
 
 export const Loader = ({ className }: LoaderProps) => (
   <svg
@@ -19,4 +19,4 @@ export const Loader = ({ className }: LoaderProps) => (
     >
       <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </svg>
-)
+);

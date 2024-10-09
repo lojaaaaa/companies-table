@@ -3,21 +3,27 @@ import {
   useEffect, 
   useRef, 
   useState
-} from 'react'
+} from 'react';
 
 import { 
   selectCompaniesData, 
   selectCompaniesIsLoading, 
   deleteCompanies, 
   getCompanies 
-} from '@/entities/company'
+} from '@/entities/company';
 
-import { AddCompanyDialog } from '@/features/add-company/ui/dialog'
-import { PER_PAGE } from '@/shared/config/constants'
-import { useAppDispatch, useAppSelector, useDebouncedFetch, useObserver, useVirtualizedList } from '@/shared/lib/hooks'
-import { Loader, Button } from '@/shared/ui'
+import { AddCompanyDialog } from '@/features/add-company/ui/dialog';
+import { PER_PAGE } from '@/shared/config/constants';
+import { 
+  useAppDispatch, 
+  useAppSelector, 
+  useDebouncedFetch, 
+  useObserver, 
+  useVirtualizedList 
+} from '@/shared/lib/hooks';
+import { Loader, Button } from '@/shared/ui';
 
-import { TableHead } from './table-head'
+import { TableHead } from './table-head';
 import { TableBody } from './table-body';
 
 const rowHeight = 73;
@@ -93,7 +99,7 @@ export const CompaniesTable = () => {
   }, [page]);
 
   return (
-    <div>
+    <>
       <div className='flex justify-between items-center'>
         <div className='flex gap-2 mb-4'>
           <Button onClick={handleDeleteClick} disabled={selectedIds.length === 0}>
@@ -104,22 +110,20 @@ export const CompaniesTable = () => {
         {companies.length > 0 &&  <h3>Количество: {companies.length}</h3>}
       </div>
 
-      <div className='relative' >
+      <div className='relative'>
         <div style={{ height: rowHeight * visibleRows + 1, overflow: 'auto' }} onScroll={handleScroll}>
           <table>
             <TableHead isAllSelected={isAllSelected} onSelectAllChange={handleSelectAllChange} />
             <div style={{ height: topHeight }} />
-            
             <TableBody items={visibleCompanies} selectedIds={selectedIds} onSelectChange={handleSelectChange} />
-
             <div style={{ height: bottomHeight }} />  
           </table>
+          
           {isLoading && <Loader className="mt-8 mx-auto" />}
           {!isLoading && companies.length === 0 && <p className='text-center'>Таблица пустая</p>}
           <div ref={lastElement} style={{ height: '20px', margin: '20px 0' }} />
         </div>
       </div>
-
-    </div>
+    </>
   );
 };

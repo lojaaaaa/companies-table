@@ -1,8 +1,8 @@
 import { debounce, throttle } from "lodash";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSelector, useDispatch, TypedUseSelectorHook } from 'react-redux';
-import { AppDispatch } from 'src/app/store';
-import { RootState } from 'src/app/store';
+import { AppDispatch } from '@/app/store/store';
+import { RootState } from '@/app/store/store';
 
 export const useAppDispatch: () => AppDispatch = useDispatch;
 export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector;
